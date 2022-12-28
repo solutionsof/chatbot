@@ -128,7 +128,10 @@ const listenMessage = () => client.on('message', async msg => {
 
 client = new Client({
     authStrategy: new LocalAuth(),
-    puppeteer: { headless: true }
+    puppeteer: { 
+        headless: false,
+        args: ["--no-sandbox", "--disable-setuid-sandbox"] 
+    }
 });
 
 client.on('qr', qr => generateImage(qr, () => {
@@ -155,7 +158,12 @@ client.on('authenticated', () => {
 
 client.initialize();
 
-
+process.on("SIGINT", async()=>{
+    console.log("terminando proceso...");
+    await client.destroy();
+    console.log("cliente destriudo");
+    process.exit(0);
+});
 
 /**
  * Verificamos si tienes un gesto de db
